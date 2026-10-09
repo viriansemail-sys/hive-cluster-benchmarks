@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hive Cluster Benchmarks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#1c1208;--panel:#26190b;--line:#4a3519;--ink:#e9ecf5;--mute:#c4a878;--gold:#f5c66b;--accent:#ffd166;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Instrument Sans","Segoe UI",system-ui,sans-serif;padding:0 16px 64px;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto 0;height:240px;background:url("circuit.svg") top center/max(1440px,100%) auto no-repeat;opacity:.2;pointer-events:none}
+body::after{content:"";position:fixed;inset:auto 0 0 0;height:300px;background:url("honeycomb.svg") bottom left/340px 340px repeat-x;opacity:.1;pointer-events:none}
+.wrap{max-width:980px;margin:0 auto;position:relative;z-index:1}
+header{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:40px 0 28px}
+.badge{width:112px;height:112px;border-radius:50%;box-shadow:0 0 0 1px rgba(245,198,107,.3),0 3px 18px rgba(0,0,0,.45)}
+.eyebrow{font:12px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+h1{font:700 clamp(32px,5.5vw,52px)/1.05 "Chakra Petch",system-ui,sans-serif;margin:6px 0 8px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--mute);max-width:62ch;margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:10px}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .15s,transform .15s}
+a.card:hover,a.card:focus-visible{border-color:var(--gold);transform:translateY(-2px)}
+.card h2{font:600 24px "Chakra Petch",system-ui,sans-serif;margin:0 0 4px}
+.card .meta{font:12px "JetBrains Mono",monospace;color:var(--mute);margin-bottom:14px}
+.nums{display:flex;gap:22px;flex-wrap:wrap}
+.nums div b{display:block;font:700 30px "Chakra Petch",system-ui,sans-serif;color:var(--accent);line-height:1}
+.nums div span{font-size:12px;color:var(--mute)}
+.go{margin-top:16px;font:12px "JetBrains Mono",monospace;color:var(--gold)}
+footer{margin-top:40px;font:11px "JetBrains Mono",monospace;color:var(--mute);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="badge" src="bee.png" alt="Hive AI bee badge">
+    <div style="flex:1;min-width:0">
+      <div class="eyebrow">Hive Cluster Benchmarks</div>
+      <h1>Frontier models. <em>Home hardware.</em> No API.</h1>
+      <p class="sub">One model split across two AMD Strix Halo boxes and an NVIDIA Grace Blackwell box with llama.cpp RPC. x86 and ARM, ROCm and CUDA, Windows and Linux.</p>
+    </div>
+  </header>
+  <div class="cards">
+    <a class="card" href="benchmarks/2026-10-08-glm-5.3-3-box/">
+      <h2>GLM-5.3</h2>
+      <div class="meta">744B MoE · UD-Q2_K_XL · 254 GB · 3 boxes</div>
+      <div class="nums"><div><b>7.2</b><span>tok/s answers</span></div><div><b>52</b><span>tok/s prompt</span></div><div><b>12/12</b><span>clean</span></div></div>
+      <div class="go">Open the benchmark →</div>
+    </a>
+    <a class="card" href="benchmarks/2026-10-08-deepseek-v4-flash-3-box/">
+      <h2>DeepSeek-V4-Flash</h2>
+      <div class="meta">284B MoE · IQ2XXS · 87 GB · 2 vs 3 boxes</div>
+      <div class="nums"><div><b>13.4</b><span>tok/s answers</span></div><div><b>127</b><span>tok/s prompt</span></div><div><b>~290</b><span>GB pooled</span></div></div>
+      <div class="go">Open the benchmark →</div>
+    </a>
+  </div>
+  <footer>Tested with llama-benchy 0.4.0 · llama.cpp · Hive AI</footer>
+</div>
+</body>
+</html>
