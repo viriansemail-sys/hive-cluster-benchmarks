@@ -1,0 +1,346 @@
+<title>GLM-5.3-Flash on Three Boxes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one dark hive panel. Hero = the actual wiring diagram (Corsa ─USB4─ CC ─LAN─ Spark), then the numbers, then what it unlocks. */
+:root{
+  --bg:#1c1208; --panel:#26190b; --panel2:#2f200f; --line:#4a3519;
+  --ink:#e9ecf5; --mute:#c4a878; --gold:#f5c66b; --accent:#ffd166;
+  --amd:#ff7a59; --nv:#8fd14f; --usb:#ffd166; --lan:#9fb4ff;
+  --ok:#8fd14f; --warn:#ffb347; --hot:#ff5d5d;
+  --display:"Chakra Petch", "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --body:"Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 64px;position:relative;overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:0}
+body::before{inset:0 0 auto 0;height:240px;background:url("circuit.svg") top center / max(1440px,100%) auto no-repeat;opacity:.2;-webkit-mask-image:linear-gradient(180deg,#000 62%,transparent);mask-image:linear-gradient(180deg,#000 62%,transparent)}
+body::after{inset:auto 0 0 0;height:300px;background:url("honeycomb.svg") bottom left / 340px 340px repeat-x;opacity:.1}
+.wrap{max-width:1120px;margin:0 auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:56px}
+header{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding-top:36px}
+.badge{width:112px;height:112px;border-radius:50%;box-shadow:0 0 0 1px rgba(245,198,107,.30),0 3px 18px rgba(0,0,0,.45);flex:none}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,58px);line-height:1.02;margin:6px 0 8px;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--mute);max-width:62ch;margin:0}
+h2{font-family:var(--display);font-weight:600;font-size:26px;margin:0 0 6px;text-wrap:balance}
+.lede{color:var(--mute);margin:0 0 22px;max-width:65ch}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---- the diagram ---- */
+.rig{display:grid;grid-template-columns:1fr minmax(90px,150px) 1.15fr minmax(90px,150px) 1fr;align-items:center;gap:0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;position:relative;min-width:0;display:flex;flex-direction:column;gap:10px}
+.box.head{border-color:var(--gold);box-shadow:0 0 0 1px rgba(245,198,107,.25),0 10px 40px rgba(255,209,102,.08)}
+.box .role{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.box h3{font-family:var(--display);font-size:28px;margin:0;line-height:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.chip.amd{border-color:var(--amd);color:var(--amd)}
+.chip.nv{border-color:var(--nv);color:var(--nv)}
+.spec{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px}
+.spec li{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:4px}
+.spec li span:first-child{color:var(--mute)}
+.spec li span:last-child{text-align:right;font-family:var(--mono);font-size:12px}
+.temp{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.temp b{color:var(--ok);font-weight:600}
+.link{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 4px}
+.wire{width:100%;height:6px;border-radius:3px;position:relative;overflow:hidden}
+.wire.usb{background:rgba(255,209,102,.25);height:10px}
+.wire.lan{background:rgba(159,180,255,.22);height:4px}
+.wire i{position:absolute;top:0;bottom:0;width:26px;border-radius:3px;animation:flow 1.6s linear infinite}
+.wire.usb i{background:var(--usb);box-shadow:0 0 12px var(--usb)}
+.wire.lan i{background:var(--lan);box-shadow:0 0 10px var(--lan);animation-duration:2.8s}
+.wire i:nth-child(2){animation-delay:-.55s}.wire i:nth-child(3){animation-delay:-1.1s}
+.wire.lan i:nth-child(2){animation-delay:-1.4s}
+@keyframes flow{from{left:-30px}to{left:100%}}
+.lab{font-family:var(--mono);font-size:11px;text-align:center;line-height:1.35}
+.lab b{display:block;font-size:13px}
+.lab.usb b{color:var(--usb)} .lab.lan b{color:var(--lan)}
+.lab span{color:var(--mute)}
+.modelbar{margin-top:18px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between}
+.modelbar strong{font-family:var(--display);font-size:20px}
+.modelbar .mono{color:var(--mute);font-size:12px}
+
+/* ---- big numbers ---- */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.tile{border-top:2px solid var(--gold);padding-top:12px;min-width:0}
+.tile .v{font-family:var(--display);font-weight:700;font-size:clamp(30px,4.4vw,44px);line-height:1;color:var(--accent)}
+.tile .v small{font-size:.45em;color:var(--mute);font-weight:500;margin-left:4px}
+.tile .k{color:var(--mute);font-size:13px;margin-top:6px}
+
+/* ---- charts ---- */
+.charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.chart h4{margin:0 0 2px;font-family:var(--display);font-size:18px;font-weight:600}
+.chart p{margin:0 0 14px;color:var(--mute);font-size:12.5px}
+.row{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin-bottom:10px}
+.row .t{font-family:var(--mono);font-size:11px;color:var(--mute);line-height:1.25}
+.bars{display:grid;gap:3px}
+.bar{height:14px;border-radius:3px;position:relative;min-width:2px}
+.bar.two{background:#6d5530}
+.bar.three{background:var(--accent)}
+.bar em{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);font-style:normal;font-family:var(--mono);font-size:11px;white-space:nowrap;color:var(--ink)}
+.bar.two em{color:var(--mute)}
+.legend{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.track{padding-right:52px}
+.callout{margin-top:12px;font-size:12.5px;color:var(--ink);background:var(--panel2);border-radius:8px;padding:8px 10px}
+
+/* ---- room ---- */
+.mem{height:22px;background:var(--panel2);border-radius:6px;overflow:hidden;display:flex;margin:10px 0 8px}
+.mem .m{background:var(--accent)} .mem .o{background:#6d5530}
+.kv{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px}
+.kv li{display:flex;justify-content:space-between;gap:10px}
+.kv li span:first-child{color:var(--mute)}
+.kv li span:last-child{font-family:var(--mono);font-size:12px;text-align:right}
+.freebig{font-family:var(--display);font-size:30px;font-weight:700;color:var(--accent);line-height:1}
+.freebig small{font-size:14px;color:var(--mute);font-weight:500;margin-left:4px}
+/* ---- temps ---- */
+.temps{display:grid;gap:12px}
+.trow{display:grid;grid-template-columns:110px 1fr 70px;gap:12px;align-items:center}
+.trow .name{font-family:var(--display);font-size:16px}
+.tbar{height:16px;background:var(--panel2);border-radius:8px;position:relative;overflow:visible}
+.tbar span{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--ok),var(--warn))}
+.tbar .limit{position:absolute;top:-6px;bottom:-6px;right:0;width:2px;background:var(--hot)}
+.trow .f{font-family:var(--mono);font-size:13px;text-align:right}
+.limitnote{font-family:var(--mono);font-size:11px;color:var(--hot);text-align:right}
+
+/* ---- ladder ---- */
+.ladder{display:grid;gap:10px}
+.rung{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.rung .who{font-family:var(--display);font-size:16px;line-height:1.15}
+.rung .who small{display:block;font-family:var(--mono);font-size:11px;color:var(--mute)}
+.cap{position:relative;height:34px;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cap .fill{position:absolute;inset:0 auto 0 0;background:rgba(255,209,102,.13);border-right:2px solid var(--gold)}
+.rung.now .cap{border-color:var(--gold)}
+.rung.now .fill{background:rgba(255,209,102,.24)}
+.cap .tag{position:absolute;top:50%;transform:translateY(-50%);left:10px;font-family:var(--mono);font-size:11px;color:var(--ink);white-space:nowrap}
+.models{position:relative;height:56px;margin-left:164px}
+.mk{position:absolute;top:0;bottom:0;border-left:2px dashed var(--lan)}
+.mk span{position:absolute;top:4px;left:6px;font-family:var(--mono);font-size:11px;white-space:nowrap;color:var(--lan);line-height:1.3}
+.mk.big{border-color:var(--accent)} .mk.big span{color:var(--accent)}
+.footnote{font-size:12px;color:var(--mute)}
+
+/* ---- timeline ---- */
+.tl{list-style:none;margin:0;padding:0;display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.tl li{position:relative;padding:0 0 18px 22px}
+.tl li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--gold)}
+.tl li.win::before{background:var(--accent)}
+.tl li.bad::before{border-color:var(--hot)}
+.tl time{font-family:var(--mono);font-size:12px;color:var(--mute);display:block}
+.tl b{font-weight:600}
+.two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:40px}
+.two-col > *{min-width:0}
+footer{font-family:var(--mono);font-size:11px;color:var(--mute);border-top:1px solid var(--line);padding-top:14px;line-height:1.7}
+
+@media (max-width:900px){
+  .rig{grid-template-columns:1fr;gap:0}
+  .link{flex-direction:row;height:auto;padding:14px 0;justify-content:center}
+  .wire{width:10px!important;height:56px!important}
+  .wire i{width:100%;height:20px;left:0!important;animation-name:flowv}
+  .rig .box{order:0}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .charts{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr}
+}
+@keyframes flowv{from{top:-24px}to{top:100%}}
+@media (max-width:520px){
+  .rung{grid-template-columns:1fr;gap:4px}
+  .models{margin-left:0}
+  .trow{grid-template-columns:80px 1fr 56px}
+  .badge{width:84px;height:84px}
+}
+@media (prefers-reduced-motion:reduce){.wire i{animation:none;left:40%}}
+</style>
+
+<div class="wrap">
+  <header>
+    <img class="badge" src="bee.png" alt="Hive AI bee badge">
+    <div style="min-width:0;flex:1">
+      <div class="eyebrow">Hive Benchmarks · Oct 9, 2026</div>
+      <h1>320 billion parameters. <em>Three boxes.</em> Ten words a second.</h1>
+      <p class="sub">GLM-5.3-Flash, the fast sibling of Z.ai's GLM-5.3, ran as one model split across two AMD Strix Halo boxes and an NVIDIA Grace Blackwell box. It's 200 GB on disk at 4-bit, too big for two boxes, and it answers about 45% faster than full GLM-5.3 on the same boxes.</p>
+    </div>
+  </header>
+
+  <section aria-label="Cluster wiring">
+    <div class="rig">
+      <article class="box">
+        <div class="role">Worker · RPC :50053</div>
+        <h3>Corsa</h3>
+        <div class="chips"><span class="chip amd">AMD Ryzen AI Max+ 395</span><span class="chip amd">Radeon 8060S · ROCm</span><span class="chip">x86</span><span class="chip">Windows 11</span></div>
+        <ul class="spec">
+          <li><span>Machine</span><span>Corsair AI Workstation</span></li>
+          <li><span>Memory</span><span>128 GB unified</span></li>
+          <li><span>Holds</span><span>~68 GB of the model</span></li>
+          <li><span>Engine</span><span>llama.cpp b1341 · ggml-rpc-server</span></li>
+        </ul>
+        <div class="temp">peak during run <b class="num">122 °F</b></div>
+      </article>
+
+      <div class="link" aria-label="USB4 cable">
+        <div class="wire usb"><i></i><i></i><i></i></div>
+        <div class="lab usb"><b>USB4 cable</b><span>direct box-to-box link</span></div>
+      </div>
+
+      <article class="box head">
+        <div class="role">Head · llama-server :8081</div>
+        <h3>CC</h3>
+        <div class="chips"><span class="chip amd">AMD Ryzen AI Max+ 395</span><span class="chip amd">Radeon 8060S · ROCm</span><span class="chip">x86</span><span class="chip">Windows 11</span></div>
+        <ul class="spec">
+          <li><span>Machine</span><span>ROG Flow Z13 GZ302EA</span></li>
+          <li><span>Memory</span><span>128 GB unified</span></li>
+          <li><span>Holds</span><span>~69 GB + the file + the bench</span></li>
+          <li><span>Engine</span><span>llama.cpp b1341 · llama-server</span></li>
+        </ul>
+        <div class="temp">peak during run <b class="num">178 °F</b></div>
+      </article>
+
+      <div class="link" aria-label="Network link">
+        <div class="wire lan"><i></i><i></i></div>
+        <div class="lab lan"><b>1 Gb network</b><span>Spark's ~53 GB share crossed here</span></div>
+      </div>
+
+      <article class="box">
+        <div class="role">Worker · RPC :50052</div>
+        <h3>Spark</h3>
+        <div class="chips"><span class="chip nv">NVIDIA GB10 Grace Blackwell</span><span class="chip nv">CUDA 13</span><span class="chip">ARM</span><span class="chip">Linux</span></div>
+        <ul class="spec">
+          <li><span>Machine</span><span>ASUS Ascent GX10</span></li>
+          <li><span>Memory</span><span>128 GB unified</span></li>
+          <li><span>Holds</span><span>~53 GB of the model</span></li>
+          <li><span>Engine</span><span>llama.cpp b86d2f0 (= b1341) · CUDA build</span></li>
+        </ul>
+        <div class="temp">peak during run <b class="num">144 °F</b></div>
+      </article>
+    </div>
+    <div class="modelbar">
+      <strong>GLM-5.3-Flash · unsloth UD-Q4_K_XL GGUF</strong>
+      <span class="mono num">199,707,321,472 bytes · 6 files, each SHA256-checked against Hugging Face · 320B total, ~18B active per word</span>
+    </div>
+  </section>
+
+  <section aria-label="Headline numbers">
+    <div class="tiles">
+      <div class="tile"><div class="v num">320<small>B params</small></div><div class="k">Mixture of experts: 288 experts, 8 plus 1 shared working on each word</div></div>
+      <div class="tile"><div class="v num">10.8<small>tok/s</small></div><div class="k">Answer speed, no history. GLM-5.3 did 7.2 on the same boxes.</div></div>
+      <div class="tile"><div class="v num">137<small>tok/s</small></div><div class="k">Best prompt-reading speed, about 2.6× GLM-5.3's best</div></div>
+      <div class="tile"><div class="v num">12/12<small>clean</small></div><div class="k">Every request finished, zero errors, zero heat alerts</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>GLM-5.3-Flash vs. full GLM-5.3, same three boxes, same test</h2>
+    <p class="lede">The Hive Benchmarking Stack (llama-benchy 0.4.0): prompts of 512 and 2,048 tokens, 128-token answers, with no history and with 4,096 tokens of history. Each test runs 3 times. Full GLM-5.3 ran on the same three boxes the day before.</p>
+    <div class="charts">
+      <div class="chart">
+        <h4>Prompt reading</h4>
+        <p>tokens per second · higher is better</p>
+        <div id="pp"></div>
+        <div class="callout">1.7× to 2.9× faster. Flash puts ~18B parameters to work per token against GLM-5.3's 40B, spread over 45 layers instead of 78.</div>
+      </div>
+      <div class="chart">
+        <h4>Answer speed</h4>
+        <p>tokens per second · higher is better</p>
+        <div id="tg"></div>
+        <div class="callout">About 10 words a second, steady across all four tests. That's 40–50% faster than GLM-5.3 at every size.</div>
+      </div>
+      <div class="chart">
+        <h4>Wait for the first word</h4>
+        <p>seconds · lower is better</p>
+        <div id="ttft"></div>
+        <div class="callout">Worst case drops from 2 min 15 s to 46 s. Still the slowest part, but now usable for real work.</div>
+      </div>
+    </div>
+    <div class="legend"><span><i style="background:#6d5530"></i>GLM-5.3 · 254 GB · 3 boxes</span><span><i style="background:var(--accent)"></i>GLM-5.3-Flash · 200 GB · 3 boxes</span></div>
+  </section>
+
+  <section>
+    <div>
+      <h2>Temperatures, logged the whole run</h2>
+      <p class="lede">Every box ran its own logger with a 203 °F cutoff that stops the work on its own. CC works hardest as the head and peaked at 178 °F, 1 °F under the GLM-5.3 run. No box came close to the cutoff.</p>
+      <div class="temps" id="temps"></div>
+      <div class="limitnote" style="margin-top:8px">red line = 203 °F automatic stop</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Room on each box, measured with the model loaded</h2>
+    <p class="lede">Flash leaves real breathing room: about 27 GB free on each AMD box and about 51 GB on Spark.</p>
+    <div class="charts" id="room"></div>
+    <p class="footnote">AMD boxes: 96 GB is set aside for the GPU (the rest of the 128 GB runs Windows); the Flash share includes its working memory for a 32K context. Spark shares one 121 GB pool with Linux and its live services, so its free number is what's free for anything.</p>
+  </section>
+
+  <section>
+    <h2>Where this sits on the ladder</h2>
+    <p class="lede">Adding boxes adds room, not speed. Room decides which models can live here without an API. Bar widths are pooled model memory; dashed lines are each model's file size.</p>
+    <div class="ladder" id="ladder"></div>
+    <div class="models" id="models" aria-label="Model sizes" style="height:74px"></div>
+    <p class="footnote">At 199.7 GB, Flash is too big for the two-box pool (~192 GB) and fits the three-box pool with ~90 GB to spare. The file also carries a built-in next-word draft layer (multi-token prediction) that this run did not use. Model facts from the GGUF header: 288 experts, 8 used + 1 shared per token, 45 layers + 1 draft layer. Load: tensor split 75,50,75 in load order (Corsa, Spark, CC), 32K context, head started with -lm mmap.</p>
+  </section>
+</div>
+
+<script>
+const tests = [
+  {t:"512 prompt",  h:"no history"},
+  {t:"2,048 prompt",h:"no history"},
+  {t:"512 prompt",  h:"+4K history"},
+  {t:"2,048 prompt",h:"+4K history"}
+];
+const data = {
+  pp:   {two:[51.9,51.0,47.5,45.5],  three:[90.8,119.3,136.9,132.6], max:150, unit:"", dp:0},
+  tg:   {two:[7.17,7.15,6.99,6.82],  three:[10.76,10.20,10.09,10.03], max:13,  unit:"", dp:1},
+  ttft: {two:[9.9,40.2,97.1,135.1],  three:[5.6,17.2,33.7,46.3],     max:150, unit:" s", dp:1}
+};
+for (const id of Object.keys(data)) {
+  const d = data[id], el = document.getElementById(id);
+  el.innerHTML = tests.map((x,i)=>`
+    <div class="row"><div class="t">${x.t}<br>${x.h}</div>
+      <div class="bars track">
+        <div class="bar two" style="width:${d.two[i]/d.max*100}%"><em class="num">${d.two[i].toFixed(d.dp)}${d.unit}</em></div>
+        <div class="bar three" style="width:${d.three[i]/d.max*100}%"><em class="num">${d.three[i].toFixed(d.dp)}${d.unit}</em></div>
+      </div></div>`).join("");
+}
+const room = [
+  {n:"CC",    role:"head · AMD",      pool:96,  model:68.6, other:0,  free:27.4, disk:"162 GB free", note:"Windows side: 1.2 GB free of 31.6 (file cache)"},
+  {n:"Corsa", role:"worker · AMD",    pool:96,  model:68.4, other:0,  free:27.6, disk:"1,357 GB free", note:"Windows side: 22.1 GB free of 31.6"},
+  {n:"Spark", role:"worker · NVIDIA", pool:121, model:52.6, other:17, free:51,   disk:"59 GB free", note:"other = Linux + other services"}
+];
+document.getElementById("room").innerHTML = room.map(r=>`
+  <div class="chart"><h4>${r.n} <span style="font-family:var(--mono);font-size:11px;color:var(--mute);font-weight:400">${r.role}</span></h4>
+    <div class="freebig num">~${Math.round(r.free)}<small>GB free</small></div>
+    <div class="mem" aria-label="memory use"><div class="m" style="width:${r.model/r.pool*100}%"></div><div class="o" style="width:${r.other/r.pool*100}%"></div></div>
+    <ul class="kv">
+      <li><span>Model memory</span><span class="num">${r.pool} GB</span></li>
+      <li><span>Flash share</span><span class="num">~${r.model} GB</span></li>
+      ${r.other?`<li><span>Everything else</span><span class="num">~${r.other} GB</span></li>`:""}
+      <li><span>Disk</span><span class="num">${r.disk}</span></li>
+      <li><span style="font-size:12px">${r.note}</span><span></span></li>
+    </ul></div>`).join("");
+const temps = [["CC",178],["Spark",144],["Corsa",122]];
+document.getElementById("temps").innerHTML = temps.map(([n,f])=>`
+  <div class="trow"><div class="name">${n}</div>
+    <div class="tbar"><span style="width:${f/203*100}%"></span><div class="limit"></div></div>
+    <div class="f num">${f} °F</div></div>`).join("");
+const MAX = 500;
+const rungs = [
+  ["1 box","one AMD box",96,false],
+  ["2 boxes","CC + Corsa · Oct 7",192,false],
+  ["3 boxes","CC + Corsa + Spark",290,true],
+  ["5 boxes","+ 2 more Corsairs",480,false]
+];
+document.getElementById("ladder").innerHTML = rungs.map(([w,s,gb,now])=>`
+  <div class="rung${now?" now":""}"><div class="who">${w}<small>${s}</small></div>
+    <div class="cap"><div class="fill" style="width:${gb/MAX*100}%"></div><div class="tag num">~${gb} GB${now?" · you are here":""}</div></div></div>`).join("");
+const models = [
+  ["DeepSeek-V4-Flash · 86.7",86.7,false],
+  ["GLM-5.3-Flash · 199.7",199.7,true],
+  ["GLM-5.3 · 253.9",253.9,false]
+];
+const box = document.getElementById("models");
+box.innerHTML = models.map(([n,gb,big],i)=>`<div class="mk${big?" big":""}" style="left:${gb/MAX*100}%"><span style="top:${[4,26,48][i]}px">${n}</span></div>`).join("");
+</script>
