@@ -2,6 +2,7 @@
 
 ## ▶ [View the benchmarks (live pages)](https://viriansemail-sys.github.io/hive-cluster-benchmarks/)
 
+- [GLM-5.3-Flash + MTP · 23–37% faster answers](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-09-glm-5.3-flash-mtp-3-box/)
 - [GLM-5.3-Flash · 320B · 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-09-glm-5.3-flash-3-box/)
 - [GLM-5.3 · 744B · 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-08-glm-5.3-3-box/)
 - [DeepSeek-V4-Flash · 2 vs 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-08-deepseek-v4-flash-3-box/)
@@ -12,6 +13,7 @@ Local frontier-class models, run as one model across a small home cluster: two A
 
 | Date | Model | Size | Boxes | Answer speed | Page |
 |---|---|---|---|---|---|
+| 2026-10-09 | GLM-5.3-Flash + MTP (2 draft tokens) · UD-Q4_K_XL | 199.7 GB | 3 | ~14.2 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-09-glm-5.3-flash-mtp-3-box/) |
 | 2026-10-09 | GLM-5.3-Flash (320B MoE, ~18B active) · UD-Q4_K_XL | 199.7 GB | 3 | ~10.8 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-09-glm-5.3-flash-3-box/) |
 | 2026-10-08 | GLM-5.3 (744B MoE, 40B active) · UD-Q2_K_XL | 253.9 GB | 3 | ~7 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-08-glm-5.3-3-box/) |
 | 2026-10-08 | DeepSeek-V4-Flash · IQ2XXS | 86.7 GB | 3 | ~13 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-08-deepseek-v4-flash-3-box/) |
@@ -35,6 +37,7 @@ Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on
 - GLM-5.3: 744B is Z.ai's parameter count. Hugging Face lists 753B because the files include a built-in next-token draft (MTP) layer that llama.cpp does not use yet.
 - Loading a 254 GB model split this way hit a freeze at the end of the head box's own GPU upload (llama.cpp issues [#19482](https://github.com/ggml-org/llama.cpp/issues/19482) and [#19745](https://github.com/ggml-org/llama.cpp/issues/19745)). Starting the head with `-lm mmap` avoided it.
 - GLM-5.3-Flash needs a newer engine: it ran on llama.cpp b1341 on the AMD boxes and the matching commit b86d2f0 CUDA build on the GB10. Its built-in draft (MTP) layer was not used in this run.
+- GLM-5.3-Flash + MTP: same file, engine, boxes and split as the plain Flash run, with `--spec-type draft-mtp --spec-draft-n-max 2` on the head. Answer speed rose 23–37%; prompt reading stayed within 4%. About 71% of draft tokens were accepted. The head needed ~5 GB more memory for the draft context.
 - `--tensor-split` is applied in model-load order (RPC workers first, then the local GPU), which is not the order `--list-devices` prints.
 
 The pages are single HTML files, served with GitHub Pages.
