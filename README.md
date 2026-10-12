@@ -2,6 +2,8 @@
 
 ## ▶ [View the benchmarks (live pages)](https://viriansemail-sys.github.io/hive-cluster-benchmarks/)
 
+- [DeepSeek-V4-Flash-0731 + DSpark · 21–37% faster on 2 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/)
+- [DeepSeek-V4-Flash-0731 · 2 boxes beat 3, up to 53% faster prompt reading](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/)
 - [DeepSeek-V4-Flash-0731 + DSpark · 24–32% slower on 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-3-box/)
 - [DeepSeek-V4-Flash-0731 · 14.5 tok/s on 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-3-box/)
 - [DeepSeek-V4-Flash · new engine, up to 30% faster prompt reading](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-new-engine-3-box/)
@@ -16,6 +18,8 @@ Local frontier-class models, run as one model across a small home cluster: two A
 
 | Date | Model | Size | Boxes | Answer speed | Page |
 |---|---|---|---|---|---|
+| 2026-10-11 | DeepSeek-V4-Flash-0731 + DSpark (official drafter, 3 draft tokens) · UD-IQ2_XXS | 90.9 GB + 10.9 GB | 2 | ~20 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/) |
+| 2026-10-11 | DeepSeek-V4-Flash-0731 · UD-IQ2_XXS | 90.9 GB | 2 | ~14.9 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 + DSpark (official drafter, 3 draft tokens) · UD-IQ2_XXS | 90.9 GB + 10.9 GB | 3 | ~11.0 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-3-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 · UD-IQ2_XXS | 90.9 GB | 3 | ~14.5 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-3-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash · IQ2XXS · engine b1341 | 86.7 GB | 3 | ~13.95 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-new-engine-3-box/) |
@@ -47,6 +51,8 @@ Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on
 - DeepSeek-V4-Flash on engine b1341 (same file, boxes and flags as the b1328 run): prompt reading 14–30% faster, first-word wait up to 11 s shorter, answer speed +2–4%.
 - DeepSeek-V4-Flash-0731 (unsloth UD-IQ2_XXS) on b1341: 4–7% faster than the original V4-Flash on the same setup.
 - DeepSeek-V4-Flash-0731 + DSpark (`--spec-type draft-dspark --spec-draft-n-max 3`, official Q8_0 drafter): 24–32% slower answers on 3 boxes; 51% of draft tokens accepted. The draft file must be in the `dflash` format; the ds4-fork `deepseek4-dspark` format does not load in mainline llama.cpp. Do not pass `-devd`.
+- DeepSeek-V4-Flash-0731 on 2 boxes (CC + Corsa over USB4 only, no third box): prompt reading 41–53% faster than on 3 boxes, first-word wait 29–35% shorter, answer speed +2–4%. The boxes still take turns (layer split).
+- DeepSeek-V4-Flash-0731 + DSpark on 2 boxes: answers 21–37% faster than plain 2-box (up to ~20 tok/s), prompt reading 4–26% slower; 48% of draft tokens accepted. The same drafter lost 24–32% on 3 boxes, where every draft round also crossed the 1 Gb link.
 - `--tensor-split` is applied in model-load order (RPC workers first, then the local GPU), which is not the order `--list-devices` prints.
 
 The pages are single HTML files, served with GitHub Pages.
