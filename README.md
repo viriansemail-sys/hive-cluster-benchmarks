@@ -2,6 +2,7 @@
 
 ## ▶ [View the benchmarks (live pages)](https://viriansemail-sys.github.io/hive-cluster-benchmarks/)
 
+- [Nemotron 3.5 Bolt 74B · one box · 19 tok/s flat to 16K](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-23-nemotron-3.5-bolt-74b-1-box/)
 - [DeepSeek-V4-Flash-0731 + DSpark · 21–37% faster on 2 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/)
 - [DeepSeek-V4-Flash-0731 · 2 boxes beat 3, up to 53% faster prompt reading](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/)
 - [DeepSeek-V4-Flash-0731 + DSpark · 24–32% slower on 3 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-3-box/)
@@ -18,6 +19,7 @@ Local frontier-class models, run as one model across a small home cluster: two A
 
 | Date | Model | Size | Boxes | Answer speed | Page |
 |---|---|---|---|---|---|
+| 2026-10-23 | Nemotron 3.5 Bolt 74B-A9B (74B MoE, 9B active) · UD-Q5_K_XL | 58.9 GB | 1 | ~19.4 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-23-nemotron-3.5-bolt-74b-1-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 + DSpark (official drafter, 3 draft tokens) · UD-IQ2_XXS | 90.9 GB + 10.9 GB | 2 | ~20 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 · UD-IQ2_XXS | 90.9 GB | 2 | ~14.9 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 + DSpark (official drafter, 3 draft tokens) · UD-IQ2_XXS | 90.9 GB + 10.9 GB | 3 | ~11.0 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-3-box/) |
@@ -33,7 +35,8 @@ Local frontier-class models, run as one model across a small home cluster: two A
 | Box | Hardware | GPU stack | OS | Link |
 |---|---|---|---|---|
 | CC (head) | ASUS ROG Flow Z13 GZ302EA · Ryzen AI Max+ 395 · 128 GB | ROCm | Windows 11 | — |
-| Corsa (worker) | Corsair AI Workstation · Ryzen AI Max+ 395 · 128 GB | ROCm | Windows 11 | USB4 cable to the head |
+| Corsa (worker) | Corsair AI Workstation · Ryzen AI Max+ 395 · 128 GB | ROCm / Vulkan | Windows 11 (pooled runs) · Ubuntu 26.04 since Oct 22 | USB4 cable to the head |
+| Skypad (single-box runs) | GMKtec EVO-X2 · Ryzen AI Max+ 395 · 96 GB | Vulkan (RADV) | Ubuntu 26.04 | USB4 cable to Corsa |
 | Spark (worker) | ASUS Ascent GX10 · NVIDIA GB10 · 128 GB | CUDA 13 | Linux | 1 Gb Ethernet to the head |
 
 Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on the GB10), layer-split pipeline parallelism over RPC.
@@ -43,6 +46,7 @@ Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on
 [llama-benchy](https://github.com/eugr/llama-benchy) 0.4.0, one request at a time: prompts of 512 and 2,048 tokens, 128-token answers, with no history and with 4,096 tokens of history, 3 runs each. Every box logs its temperature the whole run with a 203 °F automatic stop.
 
 ## Notes
+- Nemotron 3.5 Bolt 74B (one box, Oct 23): llama.cpp 184f653 Vulkan build on Skypad, 131,072-token context allocated, thinking off, depths 0 / 4K / 16K. Answer speed 19.4 → 19.1 tok/s across depth.
 
 - GLM-5.3: 744B is Z.ai's parameter count. Hugging Face lists 753B because the files include a built-in next-token draft (MTP) layer that llama.cpp does not use yet.
 - Loading a 254 GB model split this way hit a freeze at the end of the head box's own GPU upload (llama.cpp issues [#19482](https://github.com/ggml-org/llama.cpp/issues/19482) and [#19745](https://github.com/ggml-org/llama.cpp/issues/19745)). Starting the head with `-lm mmap` avoided it.
