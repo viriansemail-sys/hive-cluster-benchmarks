@@ -155,6 +155,26 @@ footer{font-family:var(--mono);font-size:11px;color:var(--mute);border-top:1px s
   .badge{width:84px;height:84px}
 }
 @media (prefers-reduced-motion:reduce){.wire i{animation:none;left:40%}}
+
+/* ---- lane visual (crowd-) ---- */
+.crowd-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:center}
+.crowd-lanes{display:grid;gap:4px;min-width:0}
+.crowd-lane{height:5px;border-radius:3px;background:rgba(255,209,102,.12);position:relative;overflow:hidden;transition:opacity .4s}
+.crowd-lane i{position:absolute;top:0;bottom:0;width:18px;border-radius:3px;background:var(--accent);box-shadow:0 0 8px var(--accent);left:-20px;animation:crowdflow linear infinite}
+@keyframes crowdflow{from{left:-20px}to{left:100%}}
+.crowd-meter{text-align:center}
+.crowd-big{font-family:var(--display);font-weight:700;font-size:56px;line-height:1;color:var(--accent)}
+.crowd-big small{font-size:16px;color:var(--mute);font-weight:500;margin-left:4px}
+.crowd-cap{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:6px}
+.crowd-each{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:10px}
+.crowd-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:12px}
+.crowd-seg button{background:none;border:0;color:var(--mute);font:600 12px var(--mono);padding:6px 12px;cursor:pointer}
+.crowd-seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.crowd-seg button:disabled{cursor:not-allowed;opacity:.4;text-decoration:line-through}
+.crowd-note{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:10px;line-height:1.4}
+@media (max-width:900px){.crowd-box{grid-template-columns:1fr}}
+@media (max-width:520px){.crowd-big{font-size:44px}}
+@media (prefers-reduced-motion:reduce){.crowd-lane i{animation:none;left:40%}}
 </style>
 
 <style>
@@ -245,6 +265,21 @@ footer{font-family:var(--mono);font-size:11px;color:var(--mute);border-top:1px s
     </div>
   </section>
 
+  <section aria-label="Conversations at once" id="crowd">
+  <h2 id="crowd-title">What 32 at once looks like</h2>
+  <p class="lede" id="crowd-lede"></p>
+  <div class="crowd-box">
+    <div class="crowd-lanes" id="crowd-lanes" aria-hidden="true"></div>
+    <div class="crowd-meter">
+      <div class="crowd-big num" id="crowd-total">0<small>tok/s</small></div>
+      <div class="crowd-cap" id="crowd-cap"></div>
+      <div class="crowd-each" id="crowd-each"></div>
+      <div class="crowd-seg" id="crowd-seg" role="group" aria-label="Conversations at once"></div>
+      <div class="crowd-note" id="crowd-note" hidden></div>
+    </div>
+  </div>
+</section>
+
   <section>
     <h2>Original V4-Flash vs. 0731, same three boxes, same engine, same test</h2>
     <p class="lede">The Hive Benchmarking Stack (llama-benchy 0.4.0): prompts of 512 and 2,048 tokens, 128-token answers, with no history and with 4,096 tokens of history. Each test runs 3 times. Same engine (b1341), boxes and flags; the change is the model release and its quant (original IQ2XXS 86.7 GB vs. unsloth UD-IQ2_XXS 90.9 GB).</p>
@@ -313,4 +348,42 @@ document.getElementById("ladder").innerHTML = rungs.map(([w,s,gb,now])=>`
     <div class="cap"><div class="fill" style="width:${gb/MAX*100}%"></div><div class="tag num">~${gb} GB${now?" · this run":""}</div></div></div>`).join("");
 const models = [["DeepSeek-V4-Flash-0731 \u00b7 90.9", 90.9, true], ["GLM-5.3-Flash \u00b7 199.7", 199.7, false], ["GLM-5.3 \u00b7 253.9", 253.9, false]];
 document.getElementById("models").innerHTML = models.map(([n,gb,big],i)=>`<div class="mk${big?" big":""}" style="left:${gb/MAX*100}%"><span style="top:${[4,26,48][i]}px">${n}</span></div>`).join("");
+</script>
+<script>
+const HIVE_CROWD = {"label": "measured · one conversation, no history", "start": 1, "levels": [{"n": 1, "total": 14.5, "each": 14.5}, {"n": 8, "measured": false}, {"n": 32, "measured": false}]};
+(function(){
+  const C=HIVE_CROWD, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const lv=C.levels, maxN=Math.max(...lv.map(l=>l.n)), live=lv.filter(l=>l.measured!==false);
+  const solo=live.find(l=>l.n===1)||live[0];
+  const lanes=document.getElementById("crowd-lanes"), seg=document.getElementById("crowd-seg");
+  const fmt=(v)=>v.toLocaleString("en-US",{minimumFractionDigits:v<100?1:0,maximumFractionDigits:v<100?2:0});
+  document.getElementById("crowd-title").textContent=`What ${maxN} at once looks like`;
+  document.getElementById("crowd-lede").textContent= live.length>1
+    ? "Each lane is one conversation. One copy of the model serves every lane, batched into the same pass through the hardware. Switch the count to see the trade: more lanes, more total output, a little less for each."
+    : `Each lane is one conversation, and the token dots move at this rig's measured speed. This run was measured one conversation at a time, so one lane is lit; the ${lv.filter(l=>l.measured===false).map(l=>l.n).join(" and ")}-at-once crowd test has not been run on this rig yet.`;
+  lanes.innerHTML=Array.from({length:maxN},(_,i)=>`<div class="crowd-lane"><i style="animation-delay:-${(i*0.37)%1.9}s"></i><i style="animation-delay:-${(i*0.37+0.95)%1.9}s"></i></div>`).join("");
+  seg.innerHTML=lv.map(l=>`<button type="button" data-n="${l.n}"${l.measured===false?' disabled title="not measured on this rig yet"':''}>${l.n}</button>`).join("");
+  const miss=lv.filter(l=>l.measured===false).map(l=>l.n);
+  if(miss.length){const n=document.getElementById("crowd-note");n.hidden=false;n.textContent=`${miss.join(" and ")} at once: not measured on this rig yet`;}
+  document.getElementById("crowd-cap").textContent=C.label;
+  let shown=0;
+  function count(el,to){
+    if(reduce){el.innerHTML=fmt(to)+"<small>tok/s</small>";shown=to;return;}
+    const from=shown,t0=performance.now();shown=to;
+    (function step(t){const k=Math.min(1,(t-t0)/900),v=from+(to-from)*(1-Math.pow(1-k,3));
+      el.innerHTML=fmt(v)+"<small>tok/s</small>";if(k<1)requestAnimationFrame(step);})(t0);
+  }
+  /* dot speed: a lane crosses in 0.9 s at 46.5 tok/s (the reference 3090 run); slower rigs cross slower, capped 0.5–6 s */
+  const dur=e=>Math.min(6,Math.max(.5,46.5/e*0.9)).toFixed(2)+"s";
+  function set(n){
+    const L=lv.find(l=>l.n===n);
+    [...lanes.children].forEach((ln,i)=>{ln.style.opacity=i<n?1:.18;
+      ln.querySelectorAll("i").forEach(d=>{d.style.display=i<n?"":"none";d.style.animationDuration=dur(L.each);});});
+    count(document.getElementById("crowd-total"),L.total);
+    document.getElementById("crowd-each").textContent=`${fmt(L.each)} tok/s each`;
+    seg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.n===n)));
+  }
+  seg.addEventListener("click",e=>{const b=e.target.closest("button");if(b&&!b.disabled)set(+b.dataset.n);});
+  set(C.start||live[live.length-1].n);
+})();
 </script>
