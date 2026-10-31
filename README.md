@@ -63,7 +63,3 @@ Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on
 - `--tensor-split` is applied in model-load order (RPC workers first, then the local GPU), which is not the order `--list-devices` prints.
 
 The pages are single HTML files, served with GitHub Pages.
-
-## Enterprise AI
-
-- [/myvoice: write it like me, not like an AI](https://viriansemail-sys.github.io/hive-cluster-benchmarks/enterprise-ai/myvoice/) · a Claude Code skill built from 2,004 real messages, three blind analysts and a consensus rule.
