@@ -2,6 +2,7 @@
 
 ## ▶ [View the benchmarks (live pages)](https://viriansemail-sys.github.io/hive-cluster-benchmarks/)
 
+- [Qwen3-14B · one RTX 3090 · 779 tok/s with 32 at once](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-30-qwen3-14b-awq-rtx-3090-1-box/)
 - [Nemotron 3.5 Bolt 74B · one box · 19 tok/s flat to 16K](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-23-nemotron-3.5-bolt-74b-1-box/)
 - [DeepSeek-V4-Flash-0731 + DSpark · 21–37% faster on 2 boxes](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/)
 - [DeepSeek-V4-Flash-0731 · 2 boxes beat 3, up to 53% faster prompt reading](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/)
@@ -19,6 +20,7 @@ Local frontier-class models, run as one model across a small home cluster: two A
 
 | Date | Model | Size | Boxes | Answer speed | Page |
 |---|---|---|---|---|---|
+| 2026-10-30 | Qwen3-14B (14.8B dense) · AWQ 4-bit · vLLM 0.20.0 · one RTX 3090 at 200 W | 9.4 GB | 1 | ~46.5 tok/s (779 peak, 32 at once) | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-30-qwen3-14b-awq-rtx-3090-1-box/) |
 | 2026-10-23 | Nemotron 3.5 Bolt 74B-A9B (74B MoE, 9B active) · UD-Q5_K_XL | 58.9 GB | 1 | ~19.4 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-23-nemotron-3.5-bolt-74b-1-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 + DSpark (official drafter, 3 draft tokens) · UD-IQ2_XXS | 90.9 GB + 10.9 GB | 2 | ~20 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-dspark-2-box/) |
 | 2026-10-11 | DeepSeek-V4-Flash-0731 · UD-IQ2_XXS | 90.9 GB | 2 | ~14.9 tok/s | [open page](https://viriansemail-sys.github.io/hive-cluster-benchmarks/benchmarks/2026-10-11-deepseek-v4-flash-0731-2-box/) |
@@ -38,6 +40,7 @@ Local frontier-class models, run as one model across a small home cluster: two A
 | Corsa (worker) | Corsair AI Workstation · Ryzen AI Max+ 395 · 128 GB | ROCm / Vulkan | Windows 11 (pooled runs) · Ubuntu 26.04 since Oct 22 | USB4 cable to the head |
 | Skypad (single-box runs) | GMKtec EVO-X2 · Ryzen AI Max+ 395 · 96 GB | Vulkan (RADV) | Ubuntu 26.04 | USB4 cable to Corsa |
 | Spark (worker) | ASUS Ascent GX10 · NVIDIA GB10 · 128 GB | CUDA 13 | Linux | 1 Gb Ethernet to the head |
+| Little Geek (single-GPU runs) | MSI MAG X870 Tomahawk · Ryzen 7 7800X3D · 96 GB · NVIDIA RTX 3090 24 GB | CUDA 13 · vLLM | Ubuntu 22.04 | — |
 
 Engine: llama.cpp (b1328 on the AMD boxes, matching commit 8172e65 CUDA build on the GB10), layer-split pipeline parallelism over RPC.
 

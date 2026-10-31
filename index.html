@@ -43,6 +43,12 @@ footer{margin-top:40px;font:11px "JetBrains Mono",monospace;color:var(--mute);bo
     </div>
   </header>
   <div class="cards">
+    <a class="card" href="benchmarks/2026-10-30-qwen3-14b-awq-rtx-3090-1-box/">
+      <h2>Qwen3-14B · 1 RTX 3090</h2>
+      <div class="meta">14.8B dense · AWQ 4-bit · 9.4 GB · one NVIDIA RTX 3090 · vLLM</div>
+      <div class="nums"><div><b>46.5</b><span>tok/s one chat</span></div><div><b>779</b><span>tok/s 32 at once</span></div><div><b>246/246</b><span>clean</span></div></div>
+      <div class="go">Open the benchmark →</div>
+    </a>
     <a class="card" href="benchmarks/2026-10-23-nemotron-3.5-bolt-74b-1-box/">
       <h2>Nemotron 3.5 Bolt 74B · 1 box</h2>
       <div class="meta">74B MoE, 9B active · 59 GB · one AMD Strix Halo box · Vulkan</div>
@@ -113,7 +119,7 @@ footer{margin-top:40px;font:11px "JetBrains Mono",monospace;color:var(--mute);bo
       <div class="go">Open the page →</div>
     </a>
   </div>
-  <footer>Tested with llama-benchy 0.4.0 · llama.cpp · Hive AI</footer>
+  <footer>Tested with llama-benchy 0.4.0 · llama.cpp · vLLM · Hive AI</footer>
 </div>
 </body>
 </html>
